@@ -7,10 +7,13 @@ use Illuminate\Http\Request;
 
 use App\Models\Recipe;
 
+use App\Http\Resources\RecipeResource;
+
 class RecipeController extends Controller
 {
     public function index(){
-        return Recipe::with('category', 'tags', 'user')->get();
+        $recipe = Recipe::with('category', 'tags', 'user')->get();
+        return RecipeResource::collection($recipe);
     }
 
     public function store(){
@@ -18,7 +21,8 @@ class RecipeController extends Controller
     }
 
     public function show(Recipe $recipe){
-        return $recipe->loaad('category', 'tags', 'user');
+        $recipe = $recipe->load('category', 'tags', 'user');
+        return new RecipeResource($recipe);
     }
 
     public function update(){
