@@ -24,7 +24,8 @@ class CategoryTest extends TestCase
         Sanctum::actingAs(User::factory()->create());
         $categories = Category::factory(2)->create();
         $response = $this->getJson('/api/categories');
-        $response ->assertJsonCount(2, 'data')
+        $response ->assertStatus(Response::HTTP_OK) 
+            ->assertJsonCount(2, 'data')
             ->assertJsonStructure([
                 'data'=>[
                     [

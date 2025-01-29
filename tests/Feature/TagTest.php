@@ -6,15 +6,60 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
+use Symfony\Component\HttpFoundation\Response;
+use App\Models\Tag;
+use App\Models\User;
+
+use Laravel\Sanctum\Sanctum;
+
 class TagTest extends TestCase
 {
     /**
      * A basic feature test example.
      */
-    public function test_example(): void
+    use RefreshDatabase;
+    public function test_index(): void
     {
-        $response = $this->get('/');
+        Sanctum::actingAs(User::factory()->create());
 
-        $response->assertStatus(200);
+        $tags = Tag::factory(2)->create();
+
+        $response = $this->getJson('/api/tags');
+
+        $response->assertStatus(Response::HTTP_OK)
+            ->assertJsonCount(2, 'data')
+            ->assertJsonStructure([
+                'data' => [
+                    [
+                        'id',
+                        'type',
+                        'attributes' => ['name'],
+                        'relationships' => [
+                            'recipes' => []
+                        ],
+                    ]
+                ]
+            ]);
+    }
+
+    public function test_show(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+
+        $tag = Tag::factory()->create();
+
+        $response = $this->getJson('/api/tags/' . $tag->id);
+        $response->assertStatus(Response::HTTP_OK)
+            ->assertJsonStructure([
+                'data' => [
+
+                    'id',
+                    'type',
+                    'attributes' => ['name'],
+                    'relationships' => [
+                        'recipes' => []
+                    ],
+                ]
+            ]);
     }
 }
