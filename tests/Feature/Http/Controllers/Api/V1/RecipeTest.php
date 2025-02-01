@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Http\Controllers\Api\V1;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -30,7 +30,7 @@ class RecipeTest extends TestCase
 
         $recipes = Recipe::factory(2)->create();
 
-        $response = $this->getJson('/api/recipes');
+        $response = $this->getJson('/api/v1/recipes');
 
         $response->assertStatus(Response::HTTP_OK)
             ->assertJsonCount(2, 'data')
@@ -52,7 +52,7 @@ class RecipeTest extends TestCase
 
         $recipe = Recipe::factory()->create();
 
-        $response = $this->getJson('/api/recipes/' . $recipe->id);
+        $response = $this->getJson('/api/v1/recipes/' . $recipe->id);
         $response->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure([
                 'data' => [
@@ -71,7 +71,7 @@ class RecipeTest extends TestCase
 
         $recipe = Recipe::factory()->create();
 
-        $response = $this->deleteJson('/api/recipes/' . $recipe->id);
+        $response = $this->deleteJson('/api/v1/recipes/' . $recipe->id);
         $response->assertStatus(Response::HTTP_NO_CONTENT);
     }
 
@@ -91,7 +91,7 @@ class RecipeTest extends TestCase
             'image' => UploadedFile::fake()->image('recipe.png')
         ];
 
-        $response = $this->postJson('/api/recipes/', $data);
+        $response = $this->postJson('/api/v1/recipes/', $data);
         $response->assertStatus(Response::HTTP_CREATED);
     }
 
@@ -109,7 +109,7 @@ class RecipeTest extends TestCase
             'instructions' => $this->faker->text,
         ];
 
-        $response = $this->putJson('/api/recipes/' . $recipe->id, $data);
+        $response = $this->putJson('/api/v1/recipes/' . $recipe->id, $data);
         $response->assertStatus(Response::HTTP_OK);
 
         $this->assertDatabaseHas('recipes', [
